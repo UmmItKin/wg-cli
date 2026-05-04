@@ -18,7 +18,7 @@ A minimal Bash wrapper around `wg-quick` for managing a WireGuard interface with
 ## Installation
 
 ```sh
-git clone <repo-url> wg-cli
+git clone https://github.com/UmmItKin/wg-cli wg-cli
 cd wg-cli
 chmod +x wg-server.sh
 sudo ln -s "$PWD/wg-server.sh" /usr/local/bin/wg-server
