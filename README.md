@@ -56,10 +56,12 @@ sudo ./wg-server.sh down --ip-wg 203.0.113.42
 | Down      | `wg-quick down wg0`, fall back to `ip link delete` if needed           |
 | Post-down | Confirm public IP no longer matches the VPS IP                         |
 
-Output is color-coded:
-- Green: success / action
-- Yellow: informational
-- Red: failure / shutdown
+Output uses SQLMap-style prefixes with color-coding:
+- `[*]` Yellow: informational
+- `[+]` Green: success
+- `[-]` Red: failure / error
+- `[!]` Yellow: warning
+- `[>]` Cyan: action / running
 
 IPs printed in status lines are masked to `A.B.*.*` to avoid leaking the full address.
 
