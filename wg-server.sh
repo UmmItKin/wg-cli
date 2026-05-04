@@ -4,18 +4,34 @@ set -euo pipefail
 
 readonly INTERFACE="wg0"
 
-G='\033[0;32m'
-R='\033[0;31m'
-Y='\033[0;33m'
-NC='\033[0m'
+# Colors
+C_RESET='\033[0m'
+C_GREEN='\033[0;32m'
+C_RED='\033[0;31m'
+C_YELLOW='\033[0;33m'
+C_CYAN='\033[0;36m'
+C_BOLD='\033[1m'
+
+# SQLMap-style output prefixes
+PREFIX_INFO="[*]"
+PREFIX_OK="[+]"
+PREFIX_ERR="[-]"
+PREFIX_WARN="[!]"
+PREFIX_RUN="[>]"
+
+log_info()    { printf "${C_YELLOW}${PREFIX_INFO}${C_RESET} $1\n"; }
+log_ok()      { printf "${C_GREEN}${PREFIX_OK}${C_RESET} $1\n"; }
+log_err()     { printf "${C_RED}${PREFIX_ERR}${C_RESET} $1\n"; }
+log_warn()    { printf "${C_YELLOW}${PREFIX_WARN}${C_RESET} $1\n"; }
+log_run()     { printf "${C_CYAN}${PREFIX_RUN}${C_RESET} $1\n"; }
 
 usage() {
-    printf "${R}Usage: $0 {up|down} --ip-wg <EXPECTED_IP>${NC}\n"
+    log_err "Usage: $0 {up|down} --ip-wg <EXPECTED_IP>"
     exit 1
 }
 
 fix_resolvconf() {
-    printf "${Y}Running: resolvconf -u${NC}\n"
+    log_run "Refreshing DNS (resolvconf -u)"
     sudo resolvconf -u || true
 }
 
@@ -37,9 +53,9 @@ vpn_up() {
     local target_ip=$1
 
     if check_wg_active; then
-        printf "${Y}Status: $INTERFACE is already up${NC}\n"
+        log_warn "$INTERFACE is already up"
     else
-        printf "${G}Action: Bringing up $INTERFACE${NC}\n"
+        log_run "Bringing up $INTERFACE"
         fix_resolvconf
         sudo wg-quick up "$INTERFACE" || { fix_resolvconf; exit 1; }
     fi
@@ -50,9 +66,9 @@ vpn_up() {
     current_full_ip=$(curl -s --max-time 5 ifconfig.me || echo "")
     
     if [[ "$current_full_ip" == "$target_ip" ]]; then
-        printf "${G}Status: Success (Connected to VPS: $target_ip)${NC}\n"
+        log_ok "Connected to VPS: $target_ip"
     else
-        printf "${R}Status: Failure (Current IP: $(get_masked_ip))${NC}\n"
+        log_err "Connection failed (Current IP: $(get_masked_ip))"
         vpn_down "$target_ip"
         exit 1
     fi
@@ -60,7 +76,7 @@ vpn_up() {
 
 vpn_down() {
     local target_ip=$1
-    printf "${R}Action: Stopping $INTERFACE${NC}\n"
+    log_run "Stopping $INTERFACE"
     
     fix_resolvconf
     
@@ -72,14 +88,14 @@ vpn_down() {
 
     fix_resolvconf
 
-    printf "${G}Action: Verifying Shutdown${NC}\n"
+    log_run "Verifying shutdown"
     local current_full_ip
     current_full_ip=$(curl -s --max-time 5 ifconfig.me || echo "")
 
     if [[ "$current_full_ip" != "$target_ip" ]]; then
-        printf "${G}Status: Success (Current IP: $(get_masked_ip))${NC}\n"
+        log_ok "Disconnected (Current IP: $(get_masked_ip))"
     else
-        printf "${R}Status: Warning (Still showing VPS IP: $target_ip)${NC}\n"
+        log_warn "Still showing VPS IP: $target_ip"
         exit 1
     fi
 }
