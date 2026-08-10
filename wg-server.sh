@@ -12,12 +12,12 @@ C_YELLOW='\033[0;33m'
 C_CYAN='\033[0;36m'
 C_BOLD='\033[1m'
 
-# SQLMap-style output prefixes
-PREFIX_INFO="[*]"
-PREFIX_OK="[+]"
-PREFIX_ERR="[-]"
-PREFIX_WARN="[!]"
-PREFIX_RUN="[>]"
+# systemd-style output prefixes
+PREFIX_INFO="[INFO]"
+PREFIX_OK="[  OK  ]"
+PREFIX_ERR="[FAILED]"
+PREFIX_WARN="[WARN]"
+PREFIX_RUN="[*]"
 
 log_info()    { printf "${C_YELLOW}${PREFIX_INFO}${C_RESET} $1\n"; }
 log_ok()      { printf "${C_GREEN}${PREFIX_OK}${C_RESET} $1\n"; }
