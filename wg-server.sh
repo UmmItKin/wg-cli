@@ -37,7 +37,7 @@ fix_resolvconf() {
 
 get_masked_ip() {
     local full_ip
-    full_ip=$(curl -s --max-time 5 ifconfig.me || echo "OFFLINE")
+    full_ip=$(curl -4 -s --max-time 5 ifconfig.me || echo "OFFLINE")
     if [[ "$full_ip" =~ ^([0-9]+)\.([0-9]+)\.[0-9]+\.[0-9]+$ ]]; then
         echo "${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.*.*"
     else
@@ -63,8 +63,8 @@ vpn_up() {
     fix_resolvconf
     
     local current_full_ip
-    current_full_ip=$(curl -s --max-time 5 ifconfig.me || echo "")
-    
+    current_full_ip=$(curl -4 -s --max-time 5 ifconfig.me || echo "")
+
     if [[ "$current_full_ip" == "$target_ip" ]]; then
         log_ok "Connected to VPS: $target_ip"
     else
@@ -90,7 +90,7 @@ vpn_down() {
 
     log_run "Verifying shutdown"
     local current_full_ip
-    current_full_ip=$(curl -s --max-time 5 ifconfig.me || echo "")
+    current_full_ip=$(curl -4 -s --max-time 5 ifconfig.me || echo "")
 
     if [[ "$current_full_ip" != "$target_ip" ]]; then
         log_ok "Disconnected (Current IP: $(get_masked_ip))"
