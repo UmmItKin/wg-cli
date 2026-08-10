@@ -14,7 +14,7 @@ C_BOLD='\033[1m'
 
 # systemd-style output prefixes
 PREFIX_INFO="[INFO]"
-PREFIX_OK="[  OK  ]"
+PREFIX_OK="[OK]"
 PREFIX_ERR="[FAILED]"
 PREFIX_WARN="[WARN]"
 PREFIX_RUN="[*]"
